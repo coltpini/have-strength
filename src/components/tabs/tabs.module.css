@@ -1,0 +1,8 @@
+.tabs {
+  --tabs-row: "tab";
+  --content-row: "content";
+  display: grid;
+  grid-template-areas:
+    var(--tabs-row)
+    var(--content-row);
+}

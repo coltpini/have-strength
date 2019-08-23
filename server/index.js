@@ -1,45 +1,60 @@
-import "dotenv/config";
-import "isomorphic-fetch";
-import express from "express";
 import path from "path";
-import compression from "compression";
-import helmet from "helmet";
-import bodyParser from "body-parser";
+import Express from "express";
+import React from "react";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+import counterApp from "./reducers";
+import App from "./containers/App";
 
-// the reactified route-handler from the `app`
-import reactHandler from "../client/_server.js";
+import { renderToString } from "react-dom/server";
 
-// create express app...
-export const app = express();
+const app = Express();
+const port = 3000;
 
-const { APP_WEB_BASE_PATH } = process.env;
+//Serve static files
+app.use("/static", Express.static("static"));
 
-// middleware
-app.use(compression());
-app.use(helmet());
-app.use(
-  `${APP_WEB_BASE_PATH}/static`,
-  express.static(path.join(__dirname, "static"))
-);
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// This is fired every time the server side receives a request
+app.use(handleRender);
 
-// handle routes via react...
-app.get("*", reactHandler);
+function handleRender(req, res) {
+  // Create a new Redux store instance
+  const store = createStore(counterApp);
 
-// prepare 404
-app.use("*", (req, res, next) => {
-  // eslint-disable-line
-  next({ status: 404, message: "Not Found" });
-});
+  // Render the component to a string
+  const html = renderToString(
+    <Provider store={store}>
+      <App />
+    </Provider>
+  );
 
-// handle any errors
-app.use((err, req, res, next) => {
-  // eslint-disable-line
-  res.status(err.status || 500).send(err.message || "Application Error");
-  console.error(err.status === 404 ? `404 ${req.url}` : err.stack); // eslint-disable-line
-});
+  // Grab the initial state from our Redux store
+  const preloadedState = store.getState();
 
-const { PORT } = process.env;
+  // Send the rendered page back to the client
+  res.send(renderFullPage(html, preloadedState));
+}
+function renderFullPage(html, preloadedState) {
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <title>Redux Universal Example</title>
+      </head>
+      <body>
+        <div id="root">${html}</div>
+        <script>
+          // WARNING: See the following for security issues around embedding JSON in HTML:
+          // http://redux.js.org/recipes/ServerRendering.html#security-considerations
+          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(
+            /</g,
+            "\\u003c"
+          )}
+        </script>
+        <script src="/static/bundle.js"></script>
+      </body>
+    </html>
+    `;
+}
 
-app.listen(PORT, () => console.log("Running on port " + PORT)); // eslint-disable-line
+app.listen(port);

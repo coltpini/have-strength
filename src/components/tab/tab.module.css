@@ -1,0 +1,22 @@
+.name {
+  background: var(--azzurro-300);
+  color: var(--azzurro-500);
+  padding: var(--spacing-100) var(--spacing-200);
+  display: block;
+  margin: var(--spacing-200) var(--spacing-100) 0 0;
+  cursor: pointer;
+  grid-area: var(--grid-area, "tab");
+}
+.body {
+  display: block;
+  /* position: absolute;
+  top: calc(1em + (var(--spacing-100) * 2) + var(--spacing-200)); */
+  width: 100%;
+  border-top: 1px solid var(--azzurro-500);
+  padding: var(--spacing-200);
+  grid-area: content;
+}
+.active {
+  background: var(--azzurro-500);
+  color: var(--bianco);
+}

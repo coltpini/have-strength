@@ -1,10 +1,16 @@
-import { configure } from "@storybook/react";
+import { addParameters, configure } from "@storybook/react";
+import "../src/index.css";
 
-function loadStories() {
+addParameters({
+  options: {
+    name: "Be Strong",
+    sortStoriesByKind: true
+  }
+});
+
+configure(() => {
   require("../src/stories");
 
-  const req = require.context("../src", true, /.story.js$/);
+  const req = require.context("../src/components", true, /.story.js$/);
   req.keys().forEach(filename => req(filename));
-}
-
-configure(loadStories, module);
+}, module);

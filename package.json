@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "body-parser": "^1.19.0",
+    "classnames": "^2.2.6",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@storybook/addon-actions": "^5.1.11",
     "@storybook/addon-links": "^5.1.11",
+    "@storybook/addon-options": "^5.1.11",
     "@storybook/addons": "^5.1.11",
     "@storybook/react": "^5.1.11",
     "enzyme": "^3.10.0",
