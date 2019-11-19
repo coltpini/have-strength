@@ -5,7 +5,6 @@ import classnames from "classnames";
 export const Tab = ({ children, name, active, setActive, index }) => {
   const tab = useRef(null);
   useEffect(() => {
-    console.log(index);
     tab.current.style.setProperty("--grid-area", `tab${index}`);
   });
   return (
